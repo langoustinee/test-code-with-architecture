@@ -28,8 +28,8 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @SpringBootTest
 @TestPropertySource("classpath:test-application.properties")
 @SqlGroup({
-        @Sql(value = "/sql/src/test/resources/sql/user-service-test-data.sql", executionPhase = BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/src/test/resources/sql/delete-all-data.sql", executionPhase = AFTER_TEST_METHOD)
+        @Sql(value = "/sql/user-service-test-data.sql", executionPhase = BEFORE_TEST_METHOD),
+        @Sql(value = "/sql/delete-all-data.sql", executionPhase = AFTER_TEST_METHOD)
 })
 public class UserServiceTest {
 

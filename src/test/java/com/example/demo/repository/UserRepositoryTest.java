@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @TestPropertySource("classpath:test-application.properties")
-@Sql("/sql/src/test/resources/sql/user-repository-test-data.sql")
+@Sql("/sql/user-repository-test-data.sql")
 public class UserRepositoryTest {
 
     @Autowired
