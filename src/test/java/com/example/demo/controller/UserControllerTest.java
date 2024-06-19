@@ -81,6 +81,18 @@ public class UserControllerTest {
     }
 
     @Test
+    @DisplayName("사용자가 인증 코드로 인증 활성화 API를 호출할 때 인증 코드가 일치하지 않을 경우 권한 없음 예외를 반환한다.")
+    void 사용자가_인증_코드로_인증_API를_호출할_때_인증_코드가_일치하지_않을_경우_권한_없음_예외를_반환한다() throws Exception {
+        // given
+        // when
+        // then
+        mockMvc.perform(get("/api/users/2/verify")
+                        .queryParam("certificationCode", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab1")
+                )
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("사용자는 내 정보 조회 API를 호출하면 개인정보인 주소도 응답으로 받을 수 있다.")
     void 사용자는_내_정보_조회_API를_호출하면_개인정보인_주소도_응답으로_받을_수_있다() throws Exception {
         // given
