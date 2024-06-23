@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.PostUpdateDto;
+import com.example.demo.post.domain.PostUpdate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@ public class PostControllerTest {
     @DisplayName("사용자는 작성한 게시글을 수정할 수 있다.")
     void 사용자는_작성한_게시글을_수정할_수_있다() throws Exception {
         // given
-        PostUpdateDto request = PostUpdateDto.builder()
+        PostUpdate request = PostUpdate.builder()
                 .content("hello spring!")
                 .build();
         // when

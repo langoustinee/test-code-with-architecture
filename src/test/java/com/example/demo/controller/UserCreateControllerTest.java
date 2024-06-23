@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.UserCreateDto;
+import com.example.demo.user.domain.UserCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class UserCreateControllerTest {
     @DisplayName("회원가입 API를 호출하면 새로운 사용자를 등록할 수 있고 회원가입된 사용자는 PENDING 상태가 된다.")
     void 회원가입_API를_호출하면_새로운_사용자를_등록할_수_있고_회원가입된_사용자는_PENDING_상태가_된다() throws Exception {
         // given
-        UserCreateDto request = UserCreateDto.builder()
+        UserCreate request = UserCreate.builder()
                 .email("lango@test.com")
                 .nickname("lango")
                 .address("Pangyo")

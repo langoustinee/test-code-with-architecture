@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.CertificationCodeNotMatchedException;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.dto.UserCreateDto;
-import com.example.demo.model.dto.UserUpdateDto;
-import com.example.demo.repository.UserEntity;
+import com.example.demo.common.domain.exception.CertificationCodeNotMatchedException;
+import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.user.domain.UserCreate;
+import com.example.demo.user.domain.UserUpdate;
+import com.example.demo.user.infrastructure.UserEntity;
+import com.example.demo.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -17,8 +18,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
-import static com.example.demo.model.UserStatus.ACTIVE;
-import static com.example.demo.model.UserStatus.PENDING;
+import static com.example.demo.user.domain.UserStatus.ACTIVE;
+import static com.example.demo.user.domain.UserStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,14 +84,14 @@ public class UserServiceTest {
     @DisplayName("UserCreateDto를 이용해 사용자를 생성할 수 있다.")
     void UserCreateDto를_이용해_사용자를_생성할_수_있다() {
         // given
-        UserCreateDto userCreateDto = UserCreateDto.builder()
+        UserCreate userCreate = UserCreate.builder()
                 .email("woogi@test.com")
                 .address("Gyeongi")
                 .nickname("woogi")
                 .build();
         BDDMockito.doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
         // when
-        UserEntity result = userService.create(userCreateDto);
+        UserEntity result = userService.create(userCreate);
         // then
         assertThat(result.getId()).isNotNull();
         assertThat(result.getStatus()).isEqualTo(PENDING);
@@ -101,7 +102,7 @@ public class UserServiceTest {
     @DisplayName("UserUpdateDto를 이용해 사용자를 생성할 수 있다.")
     void UserUpdateDto를_이용해_사용자를_생성할_수_있다() {
         // given
-        UserUpdateDto updateDto = UserUpdateDto.builder()
+        UserUpdate updateDto = UserUpdate.builder()
                 .address("Jeju")
                 .nickname("lango-2")
                 .build();

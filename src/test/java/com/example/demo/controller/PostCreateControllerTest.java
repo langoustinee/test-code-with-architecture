@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.PostCreateDto;
+import com.example.demo.post.domain.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class PostCreateControllerTest {
     @DisplayName("사용자는 새로운 게시글을 등록할 수 있다.")
     void 사용자는_새로운_게시글을_등록할_수_있다() throws Exception {
         // given
-        PostCreateDto request = PostCreateDto.builder()
+        PostCreate request = PostCreate.builder()
                 .writerId(1)
                 .content("hello spring!")
                 .build();

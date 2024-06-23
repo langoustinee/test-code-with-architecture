@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.UserUpdateDto;
-import com.example.demo.repository.UserEntity;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.user.domain.UserUpdate;
+import com.example.demo.user.infrastructure.UserEntity;
+import com.example.demo.user.infrastructure.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.example.demo.model.UserStatus.ACTIVE;
+import static com.example.demo.user.domain.UserStatus.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -113,7 +113,7 @@ public class UserControllerTest {
     @DisplayName("사용자는 내 정보 수정 API를 호출하면 내 정보를 수정할 수 있다.")
     void 사용자는_내_정보_수정_API를_호출하면_내_정보를_수정할_수_있다() throws Exception {
         // given
-        UserUpdateDto request = UserUpdateDto.builder()
+        UserUpdate request = UserUpdate.builder()
                 .nickname("lango-new")
                 .address("Pangyo")
                 .build();
