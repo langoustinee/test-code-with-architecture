@@ -2,6 +2,7 @@ package com.example.demo.post.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
 import com.example.demo.post.infrastructure.PostEntity;
@@ -31,11 +32,11 @@ public class PostServiceTest {
     void getById는_존재하는_게시물을_반환한다() {
         // given
         // when
-        PostEntity result = postService.getById(1);
+        Post post = postService.getById(1);
 
         // then
-        assertThat(result.getContent()).isEqualTo("helloworld");
-        assertThat(result.getWriter().getEmail()).isEqualTo("lango@test.com");
+        assertThat(post.getContent()).isEqualTo("helloworld");
+        assertThat(post.getWriter().getEmail()).isEqualTo("lango@test.com");
     }
 
     @Test
@@ -47,12 +48,12 @@ public class PostServiceTest {
                 .build();
 
         // when
-        PostEntity result = postService.create(postCreate);
+        Post post = postService.create(postCreate);
 
         // then
-        assertThat(result.getId()).isNotNull();
-        assertThat(result.getContent()).isEqualTo("foobar");
-        assertThat(result.getCreatedAt()).isGreaterThan(0);
+        assertThat(post.getId()).isNotNull();
+        assertThat(post.getContent()).isEqualTo("foobar");
+        assertThat(post.getCreatedAt()).isGreaterThan(0);
     }
 
     @Test
@@ -66,9 +67,10 @@ public class PostServiceTest {
         postService.update(1, postUpdate);
 
         // then
-        PostEntity postEntity= postService.getById(1);
-        assertThat(postEntity.getContent()).isEqualTo("hello world :)");
-        assertThat(postEntity.getModifiedAt()).isGreaterThan(0);
+        Post post = postService.getById(1);
+        System.out.println(post);
+        assertThat(post.getContent()).isEqualTo("hello world :)");
+        assertThat(post.getModifiedAt()).isGreaterThan(0);
     }
 
 }
