@@ -1,4 +1,4 @@
-package com.example.demo.user.controller;
+package com.example.demo.medium.user;
 
 import com.example.demo.user.domain.UserUpdate;
 import com.example.demo.user.infrastructure.UserEntity;
