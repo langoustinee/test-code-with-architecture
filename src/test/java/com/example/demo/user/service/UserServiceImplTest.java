@@ -1,45 +1,56 @@
-package com.example.demo.medium.user;
+package com.example.demo.user.service;
 
 import com.example.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.mock.FakeMailSender;
+import com.example.demo.mock.FakeUserRepository;
+import com.example.demo.mock.TestClockHolder;
+import com.example.demo.mock.TestUuidHolder;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserCreate;
 import com.example.demo.user.domain.UserUpdate;
-import com.example.demo.user.infrastructure.UserEntity;
-import com.example.demo.user.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
 
 import static com.example.demo.user.domain.UserStatus.ACTIVE;
 import static com.example.demo.user.domain.UserStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
-@SpringBootTest
-@TestPropertySource("classpath:test-application.properties")
-@SqlGroup({
-        @Sql(value = "/sql/user-service-test-data.sql", executionPhase = BEFORE_TEST_METHOD),
-        @Sql(value = "/sql/delete-all-data.sql", executionPhase = AFTER_TEST_METHOD)
-})
-public class UserServiceTest {
+public class UserServiceImplTest {
 
-    @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
-    @MockBean
-    private JavaMailSender javaMailSender;
+    @BeforeEach
+    void init() {
+        FakeMailSender fakeMailSender = new FakeMailSender();
+        FakeUserRepository fakeUserRepository = new FakeUserRepository();
+        this.userServiceImpl = UserServiceImpl.builder()
+                .userRepository(fakeUserRepository)
+                .uuidHolder(new TestUuidHolder("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"))
+                .clockHolder(new TestClockHolder(12345L))
+                .certificationServiceImpl(new CertificationServiceImpl(fakeMailSender))
+                .build();
+        fakeUserRepository.save(User.builder()
+                .id(1L)
+                .email("lango@test.com")
+                .nickname("lango")
+                .address("Seoul")
+                .certificationCode("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                .status(ACTIVE)
+                .lastLoginAt(0L)
+                .build());
+        fakeUserRepository.save(User.builder()
+                .id(2L)
+                .email("sonny@test.com")
+                .nickname("sonny")
+                .address("Pangyo")
+                .certificationCode("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab")
+                .status(PENDING)
+                .lastLoginAt(0L)
+                .build());
+    }
 
     @Test
     @DisplayName("getByEmail은 ACTIVE 상태의 사용자를 조회한다.")
@@ -47,7 +58,7 @@ public class UserServiceTest {
         // given
         String email = "lango@test.com";
         // when
-        User user = userService.getByEmail(email);
+        User user = userServiceImpl.getByEmail(email);
         // then
         assertThat(user.getNickname()).isEqualTo("lango");
     }
@@ -58,7 +69,7 @@ public class UserServiceTest {
         // given
         String email = "sonny@test.com";
         // when & then
-        assertThatThrownBy(() -> userService.getByEmail(email))
+        assertThatThrownBy(() -> userServiceImpl.getByEmail(email))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -67,7 +78,7 @@ public class UserServiceTest {
     void getById는_ACTIVE_상태의_사용자를_조회한다() {
         // given
         // when
-        User user = userService.getById(1);
+        User user = userServiceImpl.getById(1);
         // then
         assertThat(user.getNickname()).isEqualTo("lango");
     }
@@ -77,7 +88,7 @@ public class UserServiceTest {
     void getById는_PENDING_상태의_사용자를_조회할_수_없다() {
         // given
         // when & then
-        assertThatThrownBy(() -> userService.getById(2))
+        assertThatThrownBy(() -> userServiceImpl.getById(2))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
@@ -90,13 +101,12 @@ public class UserServiceTest {
                 .address("Gyeongi")
                 .nickname("woogi")
                 .build();
-        BDDMockito.doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
         // when
-        User user = userService.create(userCreate);
+        User user = userServiceImpl.create(userCreate);
         // then
         assertThat(user.getId()).isNotNull();
         assertThat(user.getStatus()).isEqualTo(PENDING);
-        // TODO: assertThat(result.getCertificationCode()).isEqualTo("T.T");
+        assertThat(user.getCertificationCode()).isEqualTo("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     }
 
     @Test
@@ -108,9 +118,9 @@ public class UserServiceTest {
                 .nickname("lango-2")
                 .build();
         // when
-        userService.update(1, updateDto);
+        userServiceImpl.update(1, updateDto);
         // then
-        User user = userService.getById(1);
+        User user = userServiceImpl.getById(1);
         assertThat(user.getId()).isNotNull();
         assertThat(user.getAddress()).isEqualTo("Jeju");
         assertThat(user.getNickname()).isEqualTo("lango-2");
@@ -121,11 +131,10 @@ public class UserServiceTest {
     void 사용자가_로그인하면_마지막_로그인_시간이_변경된다() {
         // given
         // when
-        userService.login(1);
+        userServiceImpl.login(1);
         // then
-        User user = userService.getById(1);
-        assertThat(user.getLastLoginAt()).isGreaterThan(0L);
-        // FIXME: assertThat(result.getLastLoginAt()).isEqualTo("T.T");
+        User user = userServiceImpl.getById(1);
+        assertThat(user.getLastLoginAt()).isEqualTo(12345L);
     }
 
     @Test
@@ -133,9 +142,9 @@ public class UserServiceTest {
     void PENDING_상태의_사용자는_인증_코드로_ACTIVE_상태로_변경될_수_있다() {
         // given
         // when
-        userService.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab");
+        userServiceImpl.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab");
         // then
-        User user = userService.getById(2);
+        User user = userServiceImpl.getById(2);
         assertThat(user.getStatus()).isEqualTo(ACTIVE);
     }
 
@@ -145,7 +154,7 @@ public class UserServiceTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> userService.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab2"))
+        assertThatThrownBy(() -> userServiceImpl.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab2"))
                 .isInstanceOf(CertificationCodeNotMatchedException.class);
     }
 
