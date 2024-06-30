@@ -18,7 +18,7 @@ import static com.example.demo.user.domain.UserStatus.ACTIVE;
 @Service
 @Builder
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserCreateService, UserReadService, UserUpdateService, AuthenticationService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final CertificationService certificationService;
