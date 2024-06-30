@@ -35,7 +35,7 @@ public class PostCreateControllerTest {
                 .content("hello spring!")
                 .build();
         // when
-        ResponseEntity<PostResponse> result = testContainer.postCreateController.createPost(request);
+        ResponseEntity<PostResponse> result = testContainer.postCreateController.create(request);
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
         assertThat(result.getBody()).isNotNull();

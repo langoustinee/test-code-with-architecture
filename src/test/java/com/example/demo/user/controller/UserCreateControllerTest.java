@@ -26,7 +26,7 @@ public class UserCreateControllerTest {
                 .address("Pangyo")
                 .build();
         // when
-        ResponseEntity<UserResponse> result = testContainer.userCreateController.createUser(request);
+        ResponseEntity<UserResponse> result = testContainer.userCreateController.create(request);
         // then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
         assertThat(result.getBody()).isNotNull();
