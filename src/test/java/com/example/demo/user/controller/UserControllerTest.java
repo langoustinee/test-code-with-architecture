@@ -49,7 +49,7 @@ public class UserControllerTest {
         // given
         TestContainer testContainer = TestContainer.builder().build();
         // when & then
-        assertThatThrownBy(() -> testContainer.userReadService.getById(1))
+        assertThatThrownBy(() -> testContainer.userController.getUserById(1))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
