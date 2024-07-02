@@ -110,8 +110,8 @@ public class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("UserUpdateDto를 이용해 사용자를 생성할 수 있다.")
-    void UserUpdateDto를_이용해_사용자를_생성할_수_있다() {
+    @DisplayName("UserUpdateDto를 이용해 사용자를 수정할 수 있다.")
+    void UserUpdateDto를_이용해_사용자를_수정할_수_있다() {
         // given
         UserUpdate updateDto = UserUpdate.builder()
                 .address("Jeju")
